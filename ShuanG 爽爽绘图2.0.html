@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShuanG 爽爽绘图 — 个人艺术空间</title>
+    <!-- 引入高级感英文字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================================================
+           1. 视觉系统与变量定义 (Design System)
+           ========================================================================== */
+        :root {
+            --primary-blue: #0F52BA;       /* 核心克莱因蓝 */
+            --bg-light: #F8FAFC;           /* 极简画廊灰白 */
+            --text-dark: #0A192F;          /* 深藏青（主文字） */
+            --text-muted: #64748B;         /* 雾霾蓝灰（次要文字） */
+            --light-blue-bg: #E6EEF8;      /* 辅助水感淡蓝 */
+            --font-serif: 'Playfair Display', "Source Han Serif CN", "思源宋体", serif;
+            --font-sans: 'Inter', "SF Pro Display", "Source Han Sans CN", "思源黑体", sans-serif;
+            --transition-smooth: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            font-family: var(--font-sans);
+            overflow-x: hidden;
+            line-height: 1.6;
+            min-height: 100vh;
+            /* 背景柔和微动光晕 */
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(15, 82, 186, 0.03) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(196, 212, 227, 0.2) 0%, transparent 50%);
+        }
+
+        /* ==========================================================================
+           2. 顶部导航栏 (Header Layout)
+           ========================================================================== */
+        .site-header {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            align-items: center;
+            padding: 30px 4%;
+            border-bottom: 1px solid rgba(15, 82, 186, 0.08);
+            background-color: rgba(248, 250, 252, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        /* 登录/注册 */
+        .auth-btn {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-dark);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition-smooth);
+            justify-self: start;
+        }
+        .auth-btn::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background-color: var(--primary-blue);
+            border-radius: 50%;
+        }
+        .auth-btn:hover {
+            color: var(--primary-blue);
+            transform: translateX(3px);
+        }
+
+        /* 主标题 */
+        .main-title {
+            text-align: center;
+            font-family: var(--font-sans);  /* 使用黑体 */
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--text-dark);
+        }
+        .main-title span {
+            color: var(--primary-blue);
+            font-style: normal;            /* 保持正常直体 */
+            font-weight: 500;
+        }
+
+        /* 品牌Logo (爽爽绘图) */
+        .brand-logo {
+            justify-self: end;
+            font-family: var(--font-sans);
+            font-weight: 800;
+            font-size: 1.3rem;
+            letter-spacing: -0.5px;
+            color: var(--text-dark);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .brand-logo .chinese {
+            font-family: var(--font-sans); /* 改为黑体 */
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--primary-blue);
+            border-left: 1.5px solid var(--primary-blue);
+            padding-left: 6px;
+        }
+
+        /* ==========================================================================
+           3. 板块公共样式 (Section Headers)
+           ========================================================================== */
+        .main-container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 50px 4% 100px 4%;
+        }
+
+        .section-group {
+            margin-bottom: 70px;
+        }
+
+        .section-title {
+            font-family: var(--font-sans);
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 24px;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary-blue);
+            transform: rotate(45deg);
+        }
+
+        /* ==========================================================================
+           4. 自由版式工具 (大图 + 胶囊描述框)
+           ========================================================================== */
+        .large-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .large-image {
+            width: 100%;
+            aspect-ratio: 2.5 / 1; /* 扁宽大图比例 */
+        }
+
+        /* 胶囊描述框 (复刻手绘图圆角矩形) */
+        .large-text-box {
+            border: 1.5px solid var(--text-dark);
+            border-radius: 50px;
+            padding: 16px 50px;
+            text-align: center;
+            margin-top: 30px;
+            max-width: 800px;
+            width: 100%;
+            background-color: transparent;
+            transition: var(--transition-smooth);
+        }
+        .large-text-box:hover {
+            border-color: var(--primary-blue);
+            box-shadow: 0 10px 25px rgba(15, 82, 186, 0.08);
+            transform: translateY(-2px);
+        }
+        .large-text-box p {
+            font-family: var(--font-sans);
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-dark);
+            letter-spacing: 0.5px;
+        }
+
+        /* ==========================================================================
+           5. 固定排版工具 (5列横向图片展示)
+           ========================================================================== */
+        .grid-5-col {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* 平分5列 */
+            gap: 20px;
+        }
+
+        .grid-5-col .image-wrapper {
+            aspect-ratio: 1 / 1.1; /* 纵向卡片比例 */
+        }
+
+        /* ==========================================================================
+           6. 图片展示通用样式与渐变背景
+           ========================================================================== */
+        .image-wrapper {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(10, 25, 47, 0.03);
+            transition: var(--transition-smooth);
+            border: 1px solid rgba(15, 82, 186, 0.05);
+        }
+
+        .art-image {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: var(--transition-smooth);
+        }
+
+        /* 大图背景渐变 (蔚蓝梦境) */
+        .img-large {
+            background: linear-gradient(135deg, #0A192F 0%, #0F52BA 50%, #E6EEF8 100%);
+        }
+
+        /* 5张小图的渐变背景 */
+        .img-01 {
+            background: radial-gradient(circle at 30% 20%, #0F52BA 0%, #0A192F 70%, #050b14 100%);
+        }
+        .img-02 {
+            background: linear-gradient(135deg, #E6EEF8 0%, #C4D4E3 40%, #0F52BA 100%);
+        }
+        .img-03 {
+            background: 
+                radial-gradient(circle at 80% 20%, rgba(15, 82, 186, 0.8) 0%, transparent 60%),
+                radial-gradient(circle at 20% 80%, rgba(10, 25, 47, 0.9) 0%, #0F52BA 100%);
+        }
+        .img-04 {
+            background: 
+                linear-gradient(215deg, #0F52BA 0%, transparent 60%),
+                repeating-linear-gradient(45deg, rgba(15,82,186,0.1) 0px, rgba(15,82,186,0.1) 2px, transparent 2px, transparent 10px),
+                linear-gradient(0deg, #0A192F 0%, #C4D4E3 100%);
+        }
+        .img-05 {
+            background: radial-gradient(circle at 50% 50%, #C4D4E3 0%, #0F52BA 100%);
+        }
+
+        /* 悬浮互动特效 */
+        .image-wrapper:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(15, 82, 186, 0.15);
+            border-color: rgba(15, 82, 186, 0.3);
+        }
+        .image-wrapper:hover .art-image {
+            transform: scale(1.05);
+        }
+
+        /* ==========================================================================
+           7. 响应式布局优化 (Responsive Design)
+           ========================================================================== */
+        @media (max-width: 1024px) {
+            .grid-5-col {
+                grid-template-columns: repeat(3, 1fr); /* 平板显示3列 */
+            }
+            .large-image {
+                aspect-ratio: 2 / 1;
+            }
+            .site-header {
+                grid-template-columns: 1fr 1fr;
+                padding: 20px 5%;
+            }
+            .main-title {
+                display: none;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .grid-5-col {
+                grid-template-columns: repeat(2, 1fr); /* 手机端显示2列 */
+            }
+            .large-image {
+                aspect-ratio: 16 / 9;
+            }
+            .large-text-box {
+                padding: 12px 24px;
+                border-radius: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 头部导航区 -->
+    <header class="site-header">
+        <a href="#" class="auth-btn">登录 / 注册</a>
+        <h1 class="main-title">实用画图工具 —— <span>任意生成，每张都好看</span></h1>
+        <a href="#" class="brand-logo">
+            ShuanG <span class="chinese">爽爽绘图</span>
+        </a>
+    </header>
+
+    <!-- 核心布局展示区 -->
+    <main class="main-container">
+        
+        <!-- 板块 1: 自由版式工具 -->
+        <section class="section-group">
+            <h2 class="section-title">自由版式工具</h2>
+            <div class="large-card">
+                <div class="image-wrapper large-image">
+                    <div class="art-image img-large"></div>
+                </div>
+                <div class="large-text-box">
+                    <p>可以根据当前网格系统，随机改变排版样式。所有的图片与文字都会卡入网格，拥有与参考图相似的比例。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 板块 2: 固定排版工具 -->
+        <section class="section-group">
+            <h2 class="section-title">固定排版工具</h2>
+            <div class="grid-5-col">
+                <div class="image-wrapper">
+                    <div class="art-image img-01"></div>
+                </div>
+                <div class="image-wrapper">
+                    <div class="art-image img-02"></div>
+                </div>
+                <div class="image-wrapper">
+                    <div class="art-image img-03"></div>
+                </div>
+                <div class="image-wrapper">
+                    <div class="art-image img-04"></div>
+                </div>
+                <div class="image-wrapper">
+                    <div class="art-image img-05"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+</body>
+</html>
